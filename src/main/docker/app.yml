@@ -1,0 +1,15 @@
+version: '2'
+services:
+    blog-app:
+        image: blog
+        environment:
+            - SPRING_PROFILES_ACTIVE=prod,swagger
+            - SPRING_DATA_MONGODB_URI=mongodb://blog-mongodb:27017
+            - SPRING_DATA_MONGODB_DATABASE=blog
+            - JHIPSTER_SLEEP=10 # gives time for the database to boot before the application
+        ports:
+            - 8080:8080
+    blog-mongodb:
+        extends:
+            file: mongodb.yml
+            service: blog-mongodb
