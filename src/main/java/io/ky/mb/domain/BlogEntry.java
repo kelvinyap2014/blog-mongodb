@@ -1,13 +1,14 @@
 package io.ky.mb.domain;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.mapping.Document;
-import javax.validation.constraints.*;
-
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+
+import javax.validation.constraints.NotNull;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
  * A BlogEntry.
@@ -20,7 +21,6 @@ public class BlogEntry implements Serializable {
     @Id
     private String id;
 
-    @NotNull
     @Field("blog")
     private String blog;
 
@@ -28,7 +28,6 @@ public class BlogEntry implements Serializable {
     @Field("title")
     private String title;
 
-    @NotNull
     @Field("user")
     private String user;
 
@@ -42,88 +41,88 @@ public class BlogEntry implements Serializable {
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public String getId() {
-        return id;
+        return this.id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
     public String getBlog() {
-        return blog;
+        return this.blog;
     }
 
-    public BlogEntry blog(String blog) {
+    public BlogEntry blog(final String blog) {
         this.blog = blog;
         return this;
     }
 
-    public void setBlog(String blog) {
+    public void setBlog(final String blog) {
         this.blog = blog;
     }
 
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
-    public BlogEntry title(String title) {
+    public BlogEntry title(final String title) {
         this.title = title;
         return this;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
     public String getUser() {
-        return user;
+        return this.user;
     }
 
-    public BlogEntry user(String user) {
+    public BlogEntry user(final String user) {
         this.user = user;
         return this;
     }
 
-    public void setUser(String user) {
+    public void setUser(final String user) {
         this.user = user;
     }
 
     public String getContent() {
-        return content;
+        return this.content;
     }
 
-    public BlogEntry content(String content) {
+    public BlogEntry content(final String content) {
         this.content = content;
         return this;
     }
 
-    public void setContent(String content) {
+    public void setContent(final String content) {
         this.content = content;
     }
 
     public ZonedDateTime getDate() {
-        return date;
+        return this.date;
     }
 
-    public BlogEntry date(ZonedDateTime date) {
+    public BlogEntry date(final ZonedDateTime date) {
         this.date = date;
         return this;
     }
 
-    public void setDate(ZonedDateTime date) {
+    public void setDate(final ZonedDateTime date) {
         this.date = date;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        BlogEntry blogEntry = (BlogEntry) o;
+        final BlogEntry blogEntry = (BlogEntry) o;
         if (blogEntry.getId() == null || getId() == null) {
             return false;
         }

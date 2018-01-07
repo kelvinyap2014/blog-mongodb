@@ -1,23 +1,32 @@
 package io.ky.mb.web.rest;
 
-import com.codahale.metrics.annotation.Timed;
-import io.ky.mb.domain.BlogEntry;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
 
-import io.ky.mb.repository.BlogEntryRepository;
-import io.ky.mb.web.rest.errors.BadRequestAlertException;
-import io.ky.mb.web.rest.util.HeaderUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
+import com.codahale.metrics.annotation.Timed;
 
-import java.util.List;
-import java.util.Optional;
+import io.github.jhipster.web.util.ResponseUtil;
+import io.ky.mb.domain.BlogEntry;
+import io.ky.mb.repository.BlogEntryRepository;
+import io.ky.mb.security.SecurityUtils;
+import io.ky.mb.web.rest.errors.BadRequestAlertException;
+import io.ky.mb.web.rest.util.HeaderUtil;
 
 /**
  * REST controller for managing BlogEntry.
@@ -32,7 +41,7 @@ public class BlogEntryResource {
 
     private final BlogEntryRepository blogEntryRepository;
 
-    public BlogEntryResource(BlogEntryRepository blogEntryRepository) {
+    public BlogEntryResource(final BlogEntryRepository blogEntryRepository) {
         this.blogEntryRepository = blogEntryRepository;
     }
 
@@ -45,12 +54,13 @@ public class BlogEntryResource {
      */
     @PostMapping("/blog-entries")
     @Timed
-    public ResponseEntity<BlogEntry> createBlogEntry(@Valid @RequestBody BlogEntry blogEntry) throws URISyntaxException {
-        log.debug("REST request to save BlogEntry : {}", blogEntry);
+    public ResponseEntity<BlogEntry> createBlogEntry(@Valid @RequestBody final BlogEntry blogEntry) throws URISyntaxException {
+        this.log.debug("REST request to save BlogEntry : {}", blogEntry);
         if (blogEntry.getId() != null) {
             throw new BadRequestAlertException("A new blogEntry cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        BlogEntry result = blogEntryRepository.save(blogEntry);
+		patchBlogEntry(blogEntry);
+        final BlogEntry result = this.blogEntryRepository.save(blogEntry);
         return ResponseEntity.created(new URI("/api/blog-entries/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -67,16 +77,26 @@ public class BlogEntryResource {
      */
     @PutMapping("/blog-entries")
     @Timed
-    public ResponseEntity<BlogEntry> updateBlogEntry(@Valid @RequestBody BlogEntry blogEntry) throws URISyntaxException {
-        log.debug("REST request to update BlogEntry : {}", blogEntry);
+    public ResponseEntity<BlogEntry> updateBlogEntry(@Valid @RequestBody final BlogEntry blogEntry) throws URISyntaxException {
+        this.log.debug("REST request to update BlogEntry : {}", blogEntry);
         if (blogEntry.getId() == null) {
             return createBlogEntry(blogEntry);
         }
-        BlogEntry result = blogEntryRepository.save(blogEntry);
+		patchBlogEntry(blogEntry);
+        final BlogEntry result = this.blogEntryRepository.save(blogEntry);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, blogEntry.getId().toString()))
             .body(result);
     }
+
+	/** Insert values for BlogEntry.blog and BlogEntry.user. */
+	private void patchBlogEntry(final BlogEntry blogEntry) {
+		final Optional<String> userLogin = SecurityUtils.getCurrentUserLogin();
+		if (userLogin.isPresent()) {
+			blogEntry.setUser(userLogin.get());
+			blogEntry.setBlog(userLogin + "'s blog");
+		}
+	}
 
     /**
      * GET  /blog-entries : get all the blogEntries.
@@ -86,8 +106,8 @@ public class BlogEntryResource {
     @GetMapping("/blog-entries")
     @Timed
     public List<BlogEntry> getAllBlogEntries() {
-        log.debug("REST request to get all BlogEntries");
-        return blogEntryRepository.findAll();
+        this.log.debug("REST request to get all BlogEntries");
+        return this.blogEntryRepository.findAll();
         }
 
     /**
@@ -98,9 +118,9 @@ public class BlogEntryResource {
      */
     @GetMapping("/blog-entries/{id}")
     @Timed
-    public ResponseEntity<BlogEntry> getBlogEntry(@PathVariable String id) {
-        log.debug("REST request to get BlogEntry : {}", id);
-        BlogEntry blogEntry = blogEntryRepository.findOne(id);
+    public ResponseEntity<BlogEntry> getBlogEntry(@PathVariable final String id) {
+        this.log.debug("REST request to get BlogEntry : {}", id);
+        final BlogEntry blogEntry = this.blogEntryRepository.findOne(id);
         return ResponseUtil.wrapOrNotFound(Optional.ofNullable(blogEntry));
     }
 
@@ -112,9 +132,9 @@ public class BlogEntryResource {
      */
     @DeleteMapping("/blog-entries/{id}")
     @Timed
-    public ResponseEntity<Void> deleteBlogEntry(@PathVariable String id) {
-        log.debug("REST request to delete BlogEntry : {}", id);
-        blogEntryRepository.delete(id);
+    public ResponseEntity<Void> deleteBlogEntry(@PathVariable final String id) {
+        this.log.debug("REST request to delete BlogEntry : {}", id);
+        this.blogEntryRepository.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
     }
 }
