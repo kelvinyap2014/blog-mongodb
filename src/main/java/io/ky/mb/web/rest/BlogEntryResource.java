@@ -94,7 +94,7 @@ public class BlogEntryResource {
 		final Optional<String> userLogin = SecurityUtils.getCurrentUserLogin();
 		if (userLogin.isPresent()) {
 			blogEntry.setUser(userLogin.get());
-			blogEntry.setBlog(userLogin + "'s blog");
+			blogEntry.setBlog(userLogin.get() + "'s blog");
 		}
 	}
 
