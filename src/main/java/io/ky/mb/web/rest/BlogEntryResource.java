@@ -107,7 +107,7 @@ public class BlogEntryResource {
     @Timed
     public List<BlogEntry> getAllBlogEntries() {
         this.log.debug("REST request to get all BlogEntries");
-        return this.blogEntryRepository.findAll();
+		return this.blogEntryRepository.findByUserOrderByDateDesc(SecurityUtils.getCurrentUserLogin());
         }
 
     /**
